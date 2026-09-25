@@ -1,0 +1,19 @@
+{
+    "__class_name": "Misslemon",
+    "_checkout": null,
+    "_cookiecutter_sveetch_python_version": "0.5.0",
+    "_output_dir": "/home/emencia/Apps",
+    "_repo_dir": "/home/emencia/Cookies/pythonapp",
+    "_template": "/home/emencia/Cookies/pythonapp",
+    "app_name": "miss_lemon",
+    "author_email": "sveetch@gmail.com",
+    "author_name": "David Thenon",
+    "author_username": "sveetch",
+    "include_cli": true,
+    "init_git_repository": true,
+    "package_name": "miss-lemon",
+    "project_name": "Miss Lemon",
+    "project_short_description": "Rename a file structure with auto incremented prefix number",
+    "pypi_username": "sveetch",
+    "version": "0.1.0"
+}
