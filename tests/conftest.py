@@ -1,6 +1,7 @@
 """
 Pytest fixtures
 """
+import shutil
 from pathlib import Path
 
 import pytest
@@ -18,8 +19,8 @@ class FixturesSettingsTestMixin(object):
         package_path (pathlib.Path): Absolute path to the package directory.
         tests_dir (pathlib.Path): Directory name which include tests.
         tests_path (pathlib.Path): Absolute path to the tests directory.
-        fixtures_dir (pathlib.Path): Directory name which include tests datas.
-        fixtures_path (pathlib.Path): Absolute path to the tests datas.
+        datas_dir (pathlib.Path): Directory name which include tests datas.
+        datas_path (pathlib.Path): Absolute path to the tests datas.
     """
     def __init__(self):
         self.application_path = Path(
@@ -31,8 +32,8 @@ class FixturesSettingsTestMixin(object):
         self.tests_dir = "tests"
         self.tests_path = self.package_path / self.tests_dir
 
-        self.fixtures_dir = "data_fixtures"
-        self.fixtures_path = self.tests_path / self.fixtures_dir
+        self.datas_dir = "data_fixtures"
+        self.datas_path = self.tests_path / self.datas_dir
 
     def format(self, content):
         """
@@ -49,7 +50,7 @@ class FixturesSettingsTestMixin(object):
             PACKAGE=str(self.package_path),
             APPLICATION=str(self.application_path),
             TESTS=str(self.tests_path),
-            FIXTURES=str(self.fixtures_path),
+            FIXTURES=str(self.datas_path),
             VERSION=miss_lemon.__version__,
         )
 
@@ -77,3 +78,20 @@ def settings():
                 print(settings.format("Application version: {VERSION}"))
     """
     return FixturesSettingsTestMixin()
+
+
+@pytest.fixture(scope="function")
+def basic_structure(tmp_path, settings):
+    """
+    Copy the "basic_suite" structure into a temporary directory.
+
+    Returns:
+        Path: The path to the copied structure in temp directory.
+    """
+    dirname = "basic_structure"
+    basic_sample_path = settings.datas_path / dirname
+    destination = tmp_path / dirname
+
+    shutil.copytree(basic_sample_path, destination)
+
+    return destination

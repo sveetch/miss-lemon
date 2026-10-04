@@ -6,7 +6,7 @@ import click
 from miss_lemon.logger import init_logger
 
 from miss_lemon.cli.version import version_command
-from miss_lemon.cli.greet import greet_command
+from miss_lemon.cli.order import order_command
 
 
 # Help alias on "-h" argument
@@ -58,4 +58,4 @@ def cli_frontend(ctx, verbose):
 
 # Attach commands methods to the main grouper
 cli_frontend.add_command(version_command, name="version")
-cli_frontend.add_command(greet_command, name="greet")
+cli_frontend.add_command(order_command, name="order")
