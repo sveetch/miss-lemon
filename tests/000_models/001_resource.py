@@ -1,6 +1,8 @@
-import subprocess
+import json
+# import subprocess
 from pathlib import Path
 
+from miss_lemon.models.lists import SerializableList
 from miss_lemon.models.resource import ResourceModel
 
 
@@ -21,10 +23,13 @@ def test_creation(settings):
 
     assert root.parent is None
     assert root.children == [middle]
+    assert isinstance(root.children, SerializableList) is True
     assert middle.parent == root
     assert middle.children == [leaf]
+    assert isinstance(middle.children, SerializableList) is True
     assert leaf.parent == middle
     assert leaf.children == []
+    assert isinstance(leaf.children, SerializableList) is True
 
 
 def test_one_level(settings, tmp_path):
@@ -135,11 +140,8 @@ def test_two_branches(settings, tmp_path):
 
 def test_ordered_children(tmp_path):
     """
-    TODO: Order distinctly dir and files, in ascending
-
-    NOTE: This should be rather a test in model resource but i was too lazy to
-    create proper dir and files in tempdir and so prefered to use the walker to
-    populate resources
+    Method should correctly distincts directories and files, and their order should be
+    correct ascending order.
     """
     # Add 'root' branch
     root = ResourceModel(path=tmp_path / "root")
@@ -173,3 +175,61 @@ def test_ordered_children(tmp_path):
         "bye.txt",
         "hello.txt",
     ]
+
+
+def test_serialize(settings):
+    """
+    Method should correctly serialize object and respect options.
+    """
+    middle = ResourceModel(path=Path("root/middle"))
+    root = ResourceModel(
+        path=Path("root"),
+        children=[middle],
+    )
+    leaf = ResourceModel(path=Path("root/middle/leaf"))
+    middle.set_children(leaf)
+
+    assert json.loads(root.as_json()) == {
+        "path": "root",
+        "number": 0,
+        "prefix": "",
+        "original_prefix": "",
+        "name": "",
+        "children": [
+            {
+                "path": "root/middle",
+                "number": 0,
+                "prefix": "",
+                "original_prefix": "",
+                "name": "",
+                "children": [
+                    {
+                        "path": "root/middle/leaf",
+                        "number": 0,
+                        "prefix": "",
+                        "original_prefix": "",
+                        "name": "",
+                        "children": [],
+                        "built_name": "leaf"
+                    }
+                ],
+                "built_name": "middle"
+            }
+        ],
+        "built_name": "root"
+    }
+
+    assert json.loads(root.as_json(allows_only=("built_name", "children"))) == {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "built_name": "leaf"
+                    }
+                ],
+                "built_name": "middle"
+            }
+        ],
+        "built_name": "root"
+    }

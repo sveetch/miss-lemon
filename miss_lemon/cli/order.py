@@ -1,7 +1,9 @@
+import json
 import logging
 from pathlib import Path
 
 import click
+from bigtree import Tree
 
 from ..walker import DirWalker
 
@@ -29,3 +31,15 @@ def order_command(context, source):
     walker = DirWalker(source)
 
     root = walker.compute()
+
+    print("AS JSON:")
+    print(root.as_json())
+    print()
+
+    print("AS TREE:")
+    tree = Tree.from_nested_dict(
+        json.loads(root.as_json()),
+        # name_key="built_name",
+    )
+    tree.show(alias="built_name")
+    print()

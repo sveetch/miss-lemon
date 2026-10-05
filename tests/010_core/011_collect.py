@@ -21,7 +21,7 @@ def test_structure(caplog, settings):
         "number": 0,
         "prefix": "",
         "original_prefix": "",
-        "name": "",
+        "name": "basic_structure",
         "children": [
             {
                 "path": "{}/1000_views".format(structure),
@@ -29,7 +29,8 @@ def test_structure(caplog, settings):
                 "prefix": "",
                 "original_prefix": "1000",
                 "name": "views",
-                "children": []
+                "children": [],
+                "built_name": "views"
             },
             {
                 "path": "{}/010_base".format(structure),
@@ -44,7 +45,8 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "030",
                         "name": "cool.bak.py",
-                        "children": []
+                        "children": [],
+                        "built_name": "cool.bak.py"
                     },
                     {
                         "path": "{}/010_base/010_ok.txt".format(structure),
@@ -52,9 +54,11 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "010",
                         "name": "ok.txt",
-                        "children": []
+                        "children": [],
+                        "built_name": "ok.txt"
                     }
-                ]
+                ],
+                "built_name": "base"
             },
             {
                 "path": "{}/0200_empty".format(structure),
@@ -62,7 +66,8 @@ def test_structure(caplog, settings):
                 "prefix": "",
                 "original_prefix": "0200",
                 "name": "empty",
-                "children": []
+                "children": [],
+                "built_name": "empty"
             },
             {
                 "path": "{}/020_foo.py".format(structure),
@@ -70,7 +75,8 @@ def test_structure(caplog, settings):
                 "prefix": "",
                 "original_prefix": "020",
                 "name": "foo.py",
-                "children": []
+                "children": [],
+                "built_name": "foo.py"
             },
             {
                 "path": "{}/0100_models".format(structure),
@@ -85,7 +91,8 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "0101",
                         "name": "blog.py",
-                        "children": []
+                        "children": [],
+                        "built_name": "blog.py"
                     },
                     {
                         "path": "{}/0100_models/010_base.py".format(structure),
@@ -93,7 +100,8 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "010",
                         "name": "base.py",
-                        "children": []
+                        "children": [],
+                        "built_name": "base.py"
                     },
                     {
                         "path": "{}/0100_models/002_lookups".format(structure),
@@ -101,7 +109,8 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "002",
                         "name": "lookups",
-                        "children": []
+                        "children": [],
+                        "built_name": "lookups"
                     },
                     {
                         "path": "{}/0100_models/0103_category.py".format(structure),
@@ -109,7 +118,8 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "0103",
                         "name": "category.py",
-                        "children": []
+                        "children": [],
+                        "built_name": "category.py"
                     },
                     {
                         "path": "{}/0100_models/0102_article.py".format(structure),
@@ -117,7 +127,8 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "0102",
                         "name": "article.py",
-                        "children": []
+                        "children": [],
+                        "built_name": "article.py"
                     },
                     {
                         "path": "{}/0100_models/001_managers".format(structure),
@@ -128,31 +139,35 @@ def test_structure(caplog, settings):
                         "children": [
                             {
                                 "path": (
-                                    "{}/0100_models/001_managers/001_blog.py"
-                                ).format(
-                                    structure
+                                    "{}/0100_models/001_managers/001_blog.py".format(
+                                        structure
+                                    )
                                 ),
                                 "number": 0,
                                 "prefix": "",
                                 "original_prefix": "001",
                                 "name": "blog.py",
-                                "children": []
+                                "children": [],
+                                "built_name": "blog.py"
                             },
                             {
                                 "path": (
-                                    "{}/0100_models/001_managers/002_article.py"
-                                ).format(
-                                    structure
+                                    "{}/0100_models/001_managers/002_article.py".format(
+                                        structure
+                                    )
                                 ),
                                 "number": 0,
                                 "prefix": "",
                                 "original_prefix": "002",
                                 "name": "article.py",
-                                "children": []
+                                "children": [],
+                                "built_name": "article.py"
                             }
-                        ]
+                        ],
+                        "built_name": "managers"
                     }
-                ]
+                ],
+                "built_name": "models"
             },
             {
                 "path": "{}/1020_bar.py".format(structure),
@@ -160,7 +175,8 @@ def test_structure(caplog, settings):
                 "prefix": "",
                 "original_prefix": "1020",
                 "name": "bar.py",
-                "children": []
+                "children": [],
+                "built_name": "bar.py"
             },
             {
                 "path": "{}/0500_forms".format(structure),
@@ -175,11 +191,14 @@ def test_structure(caplog, settings):
                         "prefix": "",
                         "original_prefix": "502",
                         "name": "article.py",
-                        "children": []
+                        "children": [],
+                        "built_name": "article.py"
                     }
-                ]
-            },
-        ]
+                ],
+                "built_name": "forms"
+            }
+        ],
+        "built_name": "basic_structure"
     }
 
     assert caplog.record_tuples == [

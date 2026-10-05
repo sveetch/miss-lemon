@@ -1,17 +1,13 @@
-import json
 from pathlib import Path
-from dataclasses import (
-    dataclass,
-    field as dataclasses_field,
-    fields as dataclasses_fields,
-)
-from typing import Any, ClassVar
+from dataclasses import dataclass, field as dataclasses_field
+from typing import Any, ClassVar, Union
 
-from ..utils.jsons import ExtendedJsonEncoder
+from .lists import SerializableList
+from .mixins.export import ExportMixin
 
 
 @dataclass
-class ResourceModel:
+class ResourceModel(ExportMixin):
     """
     Keyword Arguments:
         path (Path): The path of the Resource.
@@ -23,19 +19,36 @@ class ResourceModel:
         parent (ResourceModel): Possible parent resource, it should never be a file.
         children (list): List of possible children Resource.
     """
-    EXPORT_PRIVATES: ClassVar[list[str]] = ["parent"]
+    EXPORT_PRIVATES: ClassVar[tuple[str]] = ("parent",)
+    EXPORT_PROPERTIES: ClassVar[tuple[str]] = ("built_name",)
     path: Path
     number: int = 0
     prefix: str = ""
     original_prefix: str = ""
     name: str = ""
     parent: Any = dataclasses_field(repr=False, default=None)
-    children: list[Any] = dataclasses_field(repr=False, default_factory=list)
+    children: Union[SerializableList, list] = dataclasses_field(
+        repr=False,
+        default_factory=SerializableList,
+    )
 
     def __post_init__(self):
+        if self.children and isinstance(self.children, list):
+            self.children = SerializableList(self.children)
+
         # Automatically link sub objects relations
         if self.children:
             self.set_children(*self.children, from_init=True)
+
+    @property
+    def built_name(self):
+        if not self.prefix and not self.name:
+            return self.path.name
+
+        if not self.prefix:
+            return self.name
+
+        return self.prefix + "_" + self.name
 
     def set_children(self, *args, from_init=False):
         """
@@ -58,30 +71,6 @@ class ResourceModel:
 
             if not from_init:
                 self.children.extend(args)
-
-    def serialize(self, coerced=False):
-        """
-        A safe way to convert to a dict without recursion issues.
-
-        Keyword Arguments:
-            coerced (bool): If enabled all values with a method ``serialize()``
-                will use it instead of returning model object. This is almost only
-                implemented internally in Deovi models so you can get an output of
-                ``serialize()`` only with Python builtin types.
-
-        Returns:
-            dict: This model object attribute serialized in a dictionnary, items named
-                after one of names from EXPORT_PRIVATES won't be in the output.
-        """
-        return {
-            f.name: (
-                getattr(self, f.name).serialize(coerced=coerced)
-                if coerced is True and hasattr(getattr(self, f.name), "serialize")
-                else getattr(self, f.name)
-            )
-            for f in dataclasses_fields(self)
-            if f.name not in self.EXPORT_PRIVATES
-        }
 
     def children_directories(self):
         """
@@ -165,16 +154,3 @@ class ResourceModel:
             level += self.parent.get_level()
 
         return level
-
-    def as_coerced(self):
-        """
-        A shortcut to returns the output of ``serialize()`` with ``coerced`` option
-        enabled.
-        """
-        return self.serialize(coerced=True)
-
-    def as_json(self):
-        """
-        Returns the output of ``serialize()`` in a JSON string.
-        """
-        return json.dumps(self.serialize(), indent=4, cls=ExtendedJsonEncoder)

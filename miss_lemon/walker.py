@@ -26,6 +26,10 @@ from .models.resource import ResourceModel
 
 
 class DirWalker:
+    """
+    TODO:
+        Actually ignores files from pattern but we may need to process ALL dirs/files.
+    """
     DEFAULT_FILE_PATTERN = re.compile(
         r"(?P<original_prefix>[0-9]+)_(?P<name>[\S]+)"
     )
@@ -100,7 +104,7 @@ class DirWalker:
         Returns:
             ResourceModel: The root resource.
         """
-        root = ResourceModel(path=self.basepath)
+        root = ResourceModel(path=self.basepath, name=self.basepath.name)
         root.set_children(*self.recursive_path_walk(self.basepath))
 
         return root
@@ -124,9 +128,17 @@ class DirWalker:
         return int(maxdeep + math.log10(step) + 1)
 
     def compute_resource(self, resource):
+        """
+        Compute the prefix data for a resource object.
+
+        Arguments:
+            resource (ResourceModel): The resource object to patch.
+
+        Returns:
+            ResourceModel: The patched resource object. However it is almost useless
+            because the object is mutated in place.
+        """
         level = resource.get_level()
-        # print(("  " * level) + "  ➖ computed:", resource.path.name)
-        # print(("  " * level) + "  ➖ level:", level)
 
         files = sorted(
             [v for v in resource.children if v.path.is_file()],
@@ -139,16 +151,18 @@ class DirWalker:
 
         # Patch directories with their computed prefix
         for position, resource in enumerate(dirs, start=1):
-            resource.number = resource.parent.number + (self.increments[level] * position)
+            resource.number = resource.parent.number + (
+                self.increments[level] * position
+            )
             resource.prefix = str(resource.number).zfill(self.matrix_length)
-            # print(("  " * level) + "  📌", resource.prefix, resource.name)
             self.compute_resource(resource)
 
         # Patch files with their computed prefix
         for position, resource in enumerate(files, start=1):
             resource.number = resource.parent.number + position
             resource.prefix = str(resource.number).zfill(self.matrix_length)
-            # print(("  " * level) + "  🔖", resource.prefix, resource.name)
+
+        return resource
 
     def compute(self, step=100):
         """

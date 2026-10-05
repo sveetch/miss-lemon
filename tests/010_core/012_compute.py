@@ -97,16 +97,9 @@
         ...
         00009 article.py
 """
-import math
-import json
-import logging
-from pathlib import Path
-
 import pytest
 
-from miss_lemon import __pkgname__
 from miss_lemon.walker import DirWalker
-from miss_lemon.models.resource import ResourceModel
 
 
 def display_resource(resource, maxdeep=0, position=0, output=None):
