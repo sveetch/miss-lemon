@@ -1,5 +1,6 @@
 .. _Python: https://www.python.org/
 .. _Click: https://click.palletsprojects.com
+.. _Big Tree: https://bigtree.readthedocs.io/
 
 ==========
 Miss Lemon
@@ -12,6 +13,7 @@ Dependencies
 
 * `Python`_>=3.8;
 * `Click`_>=8.0;
+* `Big Tree`_>=1.5.3;
 
 Links
 *****

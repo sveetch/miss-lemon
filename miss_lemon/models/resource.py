@@ -1,3 +1,4 @@
+import operator
 from pathlib import Path
 from dataclasses import dataclass, field as dataclasses_field
 from typing import Any, ClassVar, Union
@@ -74,7 +75,7 @@ class ResourceModel(ExportMixin):
 
     def children_directories(self):
         """
-        Return only children directories.
+        Return only direct children directories.
 
         Returns:
             list: List of children resources.
@@ -83,7 +84,7 @@ class ResourceModel(ExportMixin):
 
     def children_files(self):
         """
-        Return only children files.
+        Return only direct children files.
 
         Returns:
             list: List of children resources.
@@ -92,7 +93,7 @@ class ResourceModel(ExportMixin):
 
     def ordered_children(self):
         """
-        Return children properly ordered.
+        Return children resources properly ordered.
 
         * Directories comes first;
         * Then files;
@@ -107,6 +108,41 @@ class ResourceModel(ExportMixin):
             sorted(self.children_directories(), key=lambda x: x.path.name)
             + sorted(self.children_files(), key=lambda x: x.path.name)
         )
+
+    def recursive_children_directories(self, directories=None):
+        """
+        Return a flat list of all directories from resource, recursively.
+
+        Returns:
+            list: A flat list of all children directories ordered on their path from
+            leaf to the top.
+        """
+        directories = [] if directories is None else directories
+
+        for v in self.children_directories():
+            directories.append(v)
+
+            v.recursive_children_directories(directories=directories)
+
+        return sorted(directories, key=operator.methodcaller("get_level"), reverse=True)
+
+    def recursive_children_files(self, files=None):
+        """
+        Return a flat list of all files from resource, recursively.
+
+        Returns:
+            list: A flat list of all children files ordered on their path from leaf to
+            the top.
+        """
+        files = [] if files is None else files
+
+        for v in self.children_files():
+            files.append(v)
+
+        for v in self.children_directories():
+            v.recursive_children_files(files=files)
+
+        return sorted(files, key=operator.methodcaller("get_level"), reverse=True)
 
     def is_root(self):
         """

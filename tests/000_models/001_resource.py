@@ -1,5 +1,4 @@
 import json
-# import subprocess
 from pathlib import Path
 
 from miss_lemon.models.lists import SerializableList
@@ -128,6 +127,7 @@ def test_two_branches(settings, tmp_path):
     assert pang.get_level() == 3
     assert pew.get_level() == 4
 
+    # import subprocess
     # tree = subprocess.check_output(["tree", tmp_path], stderr=subprocess.STDOUT)
     # print()
     # print(tree.decode("utf-8"))
@@ -233,3 +233,63 @@ def test_serialize(settings):
         ],
         "built_name": "root"
     }
+
+
+def test_recursive_children_resources(settings, tmp_path):
+    """
+    Resource has methods to get a distinct flat list of recursive children either for
+    directories or files. Resources are ordered from their relative path from leaft to
+    top.
+    """
+    # Add 'root' branch
+    root = ResourceModel(path=tmp_path / "root")
+    root.path.mkdir()
+
+    # Add 'foo' branch
+    foo = ResourceModel(path=root.path / "foo")
+    foo.path.mkdir()
+    bar = ResourceModel(path=foo.path / "bar")
+    bar.path.mkdir()
+    foo.set_children(bar)
+    hello = ResourceModel(path=bar.path / "hello.txt")
+    hello.path.write_text("hello world")
+    bar.set_children(hello)
+
+    # Add 'ping' branch
+    ping = ResourceModel(path=root.path / "ping")
+    ping.path.mkdir()
+    pong = ResourceModel(path=ping.path / "pong")
+    pong.path.mkdir()
+    pang = ResourceModel(path=pong.path / "pang")
+    pang.path.mkdir()
+    ping.set_children(pong)
+    pong.set_children(pang)
+
+    # Add file to 'pang'
+    pew = ResourceModel(path=pang.path / "pew.txt")
+    pew.path.write_text("pew pew")
+    pang.set_children(pew)
+
+    # Push 'foo' and 'ping' branches into 'root'
+    root.set_children(foo, ping)
+
+    # import subprocess
+    # tree = subprocess.check_output(["tree", tmp_path], stderr=subprocess.STDOUT)
+    # print()
+    # print(tree.decode("utf-8"))
+    # print()
+
+    dirs = root.recursive_children_directories()
+    assert [str(v.path.relative_to(root.path)) for v in dirs] == [
+        "ping/pong/pang",
+        "foo/bar",
+        "ping/pong",
+        "foo",
+        "ping",
+    ]
+
+    files = root.recursive_children_files()
+    assert [str(v.path.relative_to(root.path)) for v in files] == [
+        "ping/pong/pang/pew.txt",
+        "foo/bar/hello.txt",
+    ]

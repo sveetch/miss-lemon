@@ -65,7 +65,7 @@ class DirWalker:
                 name=matched.group("name"),
             )
 
-        self.logger.warning("Invalid pattern for: {}".format(path.name))
+        self.logger.debug("Ignored file (from pattern): {}".format(path.name))
 
         return False
 

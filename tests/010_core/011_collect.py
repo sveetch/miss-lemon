@@ -6,10 +6,12 @@ from miss_lemon.walker import DirWalker
 from miss_lemon.models.resource import ResourceModel
 
 
-def test_structure(caplog, settings):
+def test_full_structure(caplog, settings):
     """
     The full structure should be returned only with valid resources.
     """
+    caplog.set_level(logging.DEBUG)
+
     structure = settings.datas_path / "basic_structure"
     walker = DirWalker(structure)
 
@@ -202,10 +204,10 @@ def test_structure(caplog, settings):
     }
 
     assert caplog.record_tuples == [
-        (__pkgname__, logging.WARNING, "Invalid pattern for: nib.py"),
-        (__pkgname__, logging.WARNING, "Invalid pattern for: nope"),
-        (__pkgname__, logging.WARNING, "Invalid pattern for: niet.py"),
-        (__pkgname__, logging.WARNING, "Invalid pattern for: niet.txt"),
-        (__pkgname__, logging.WARNING, "Invalid pattern for: no"),
-        (__pkgname__, logging.WARNING, "Invalid pattern for: nada.py"),
+        (__pkgname__, logging.DEBUG, "Ignored file (from pattern): nib.py"),
+        (__pkgname__, logging.DEBUG, "Ignored file (from pattern): nope"),
+        (__pkgname__, logging.DEBUG, "Ignored file (from pattern): niet.py"),
+        (__pkgname__, logging.DEBUG, "Ignored file (from pattern): niet.txt"),
+        (__pkgname__, logging.DEBUG, "Ignored file (from pattern): no"),
+        (__pkgname__, logging.DEBUG, "Ignored file (from pattern): nada.py"),
     ]
