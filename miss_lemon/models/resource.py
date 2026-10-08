@@ -124,7 +124,12 @@ class ResourceModel(ExportMixin):
 
             v.recursive_children_directories(directories=directories)
 
-        return sorted(directories, key=operator.methodcaller("get_level"), reverse=True)
+        order_per_name = sorted(directories, key=operator.attrgetter("built_name"))
+        return sorted(
+            order_per_name,
+            key=operator.methodcaller("get_level"),
+            reverse=True
+        )
 
     def recursive_children_files(self, files=None):
         """
@@ -142,7 +147,12 @@ class ResourceModel(ExportMixin):
         for v in self.children_directories():
             v.recursive_children_files(files=files)
 
-        return sorted(files, key=operator.methodcaller("get_level"), reverse=True)
+        order_per_name = sorted(files, key=operator.attrgetter("built_name"))
+        return sorted(
+            order_per_name,
+            key=operator.methodcaller("get_level"),
+            reverse=True
+        )
 
     def is_root(self):
         """
