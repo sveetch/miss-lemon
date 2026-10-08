@@ -6,8 +6,11 @@ Changelog
 TODO
 ****
 
-* [ ] option to allow to collect also files without prefix;
-* [ ] option to define ignored pattern ('.foo', '_foo');
+* [x] Option to allow to collect also files without prefix;
+* [x] Option to define excluded unix filename patterns;
+* [ ] Implement option in both commands;
+
+* [ ] Option to directly perform resource renaming with Python (but it won't be git)?
 
 
 Development

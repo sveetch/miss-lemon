@@ -17,8 +17,10 @@ Could be turned to: ::
 Would build data to generate a shell script to apply renaming, either with "mv" or
 "git mv" command.
 """
+import fnmatch
 import logging
 import math
+import operator
 import re
 
 from . import __pkgname__
@@ -27,35 +29,77 @@ from .models.resource import ResourceModel
 
 class DirWalker:
     """
-    TODO:
-        Actually ignores files from pattern but we may need to process ALL dirs/files.
+    Recursively walk into a path to find its resources.
+
+    TODO: During collection, resources must be well ordered because the collected order
+    will determine their prefix number.
+
+    Arguments:
+        basepath (Path): The path where to collect resources.
+
+    Keyword Arguments:
+        file_pattern (re.Pattern): Compiled regex to match filename prefix and name.
+            The regex pattern must include groups ``original_prefix`` and ``name``.
+        allow_unprefixed (boolean): If enabled, resource that don't match are collected
+            also but they won't never have a "original_prefix" (which won't avoid them
+            to have a proper built prefix).
     """
     DEFAULT_FILE_PATTERN = re.compile(
         r"(?P<original_prefix>[0-9]+)_(?P<name>[\S]+)"
     )
 
-    def __init__(self, basepath, file_pattern=None):
+    def __init__(self, basepath, file_pattern=None, allow_unprefixed=False,
+                 excludes=None):
         self.logger = logging.getLogger(__pkgname__)
         self.basepath = basepath.resolve(strict=True)
         self.file_pattern = file_pattern or self.DEFAULT_FILE_PATTERN
+        self.allow_unprefixed = allow_unprefixed
+        self.excludes = excludes or []
 
-    def is_ignored_file(self, path):
+    def is_ignored(self, path):
         """
         Check if resource is hidden or protected to ignore.
 
         * Hidden resource name starts with ``.``;
         * Protected resource name starts with ``_``;
 
+        Results:
+            boolean: False if the path is not to ignore, else True.
         """
         return (
             path.name.startswith(".")
             or path.name.startswith("_")
         )
 
+    def is_excluded(self, path):
+        """
+        TODO: Exclude path if its name(or relative path?) match one of excluded names.
+
+        Results:
+            boolean: False if the path is not excluded, else True.
+        """
+        relative = path.relative_to(self.basepath)
+
+        for item in self.excludes:
+            print(relative, ":", fnmatch.fnmatch(relative, item))
+            if fnmatch.fnmatch(relative, item):
+                return True
+
+        return False
+
     def get_resource(self, path):
         """
-        Parse resource with regex pattern to validate it then return a Resource object.
+        Get Resource object for path if it is eligible to collect.
+
+        Results:
+            ResourceModel: The resource object if path was eligible else returns False.
         """
+        if self.is_ignored(path):
+            return False
+
+        if self.is_excluded(path):
+            return False
+
         matched = self.file_pattern.match(path.name)
 
         if matched:
@@ -64,8 +108,13 @@ class DirWalker:
                 original_prefix=matched.group("original_prefix"),
                 name=matched.group("name"),
             )
+        elif self.allow_unprefixed:
+            return ResourceModel(
+                path=path,
+                name=path.name,
+            )
 
-        self.logger.debug("Ignored file (from pattern): {}".format(path.name))
+        self.logger.debug("Ignored resource (from pattern): {}".format(path.name))
 
         return False
 
@@ -77,14 +126,21 @@ class DirWalker:
             path (Path): Path object to scan for resources.
 
         Returns:
-            list: List of ResourceModel objects.
+            list: List of ResourceModel objects. This is sorted on the original path
+            name, meaning it will respect the original order.
         """
         resources = []
 
-        for item in path.iterdir():
-            if self.is_ignored_file(item):
-                continue
+        files = sorted(
+            [v for v in path.iterdir() if v.is_file()],
+            key=operator.attrgetter("name")
+        )
+        dirs = sorted(
+            [v for v in path.iterdir() if v.is_dir()],
+            key=operator.attrgetter("name")
+        )
 
+        for item in dirs + files:
             resource = self.get_resource(item)
 
             if not resource:

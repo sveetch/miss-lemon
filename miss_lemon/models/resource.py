@@ -12,10 +12,12 @@ class ResourceModel(ExportMixin):
     """
     Keyword Arguments:
         path (Path): The path of the Resource.
-        number (integer): Number of resource used according to 'prefix'.
-        prefix (integer): New filename prefix.
+        number (integer): Number of resource used according to 'prefix', commonly empty
+            at object initialization then computed further..
+        prefix (integer): New filename prefix, commonly empty at object initialization
+            then computed further.
         original_prefix (string): Filename prefix as parsed from original path. It is
-            almost unused.
+            almost unused, its role is more for history.
         name (string): Filename content as parsed from original path.
         parent (ResourceModel): Possible parent resource, it should never be a file.
         children (list): List of possible children Resource.
@@ -43,6 +45,9 @@ class ResourceModel(ExportMixin):
 
     @property
     def built_name(self):
+        """
+        Build name with prefix if not empty, else just the resource name.
+        """
         if not self.prefix and not self.name:
             return self.path.name
 
@@ -115,7 +120,7 @@ class ResourceModel(ExportMixin):
 
         Returns:
             list: A flat list of all children directories ordered on their path from
-            leaf to the top.
+            leaf to the top, then ascending on name.
         """
         directories = [] if directories is None else directories
 
@@ -137,7 +142,7 @@ class ResourceModel(ExportMixin):
 
         Returns:
             list: A flat list of all children files ordered on their path from leaf to
-            the top.
+            the top, then ascending on name.
         """
         files = [] if files is None else files
 
