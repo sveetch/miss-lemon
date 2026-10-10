@@ -95,3 +95,20 @@ def basic_structure(tmp_path, settings):
     shutil.copytree(basic_sample_path, destination)
 
     return destination
+
+
+@pytest.fixture(scope="function")
+def minimal_structure(tmp_path, settings):
+    """
+    Copy the "basic_suite" structure into a temporary directory.
+
+    Returns:
+        Path: The path to the copied structure in temp directory.
+    """
+    dirname = "minimal_structure"
+    basic_sample_path = settings.datas_path / dirname
+    destination = tmp_path / dirname
+
+    shutil.copytree(basic_sample_path, destination)
+
+    return destination

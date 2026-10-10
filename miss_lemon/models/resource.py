@@ -110,8 +110,8 @@ class ResourceModel(ExportMixin):
             list: List of children resources.
         """
         return (
-            sorted(self.children_directories(), key=lambda x: x.path.name)
-            + sorted(self.children_files(), key=lambda x: x.path.name)
+            sorted(self.children_directories(), key=operator.attrgetter("built_name"))
+            + sorted(self.children_files(), key=operator.attrgetter("built_name"))
         )
 
     def recursive_directories(self, directories=None):

@@ -169,8 +169,10 @@ class DiffTree:
         # originals = self.build_flat_tree(original_root)
         changes = self.build_flat_tree(changes_root)
 
+        # Start tree with root
         tree = RichTree(str(original_root.path))
 
+        # Then recursively append children
         for child in original_root.ordered_children():
             self.add_rich_children_node(tree, child, changes)
 
@@ -188,14 +190,17 @@ class DiffTree:
         Returns:
             bigtree.Tree: The Bigtree object of root resource.
         """
-        tree = Tree(
-            Node(str(original_root.path.name))
-        )
         basenodepath = original_root.path.parent
 
-        originals = self.build_flat_tree(original_root)
         changes = self.build_flat_tree(changes_root)
 
+        # Start tree with root
+        tree = Tree(
+            Node(str(original_root.path.name), label=str(original_root.path))
+        )
+
+        # Then build a flat dict for digest by Big Tree, each item key must be a path
+        # under the root path
         tree.add_dict_by_path({
             str(Path(k).relative_to(basenodepath)): {
                 "label": self.get_ascii_label(
@@ -203,7 +208,7 @@ class DiffTree:
                     changes.get(str(v["resource"].path), None)
                 )
             }
-            for k, v in originals.items()
+            for k, v in self.build_flat_tree(original_root).items()
         })
 
         return tree

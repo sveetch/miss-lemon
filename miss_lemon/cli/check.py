@@ -117,10 +117,10 @@ def check_command(context, source, step, output, unprefixed, excludes, from_orig
     original_walker = DirWalker(source, allow_unprefixed=True)
     original_root = original_walker.collect()
 
-    # Print full structure tree without any exclusions
-    click.echo("🎨 Tree preview")
-
+    # Print tree preview with differences report
     if output == "tree":
+        click.echo("🎨 Big Tree preview")
         click.echo(differ.build_bigtree(original_root, new_root).show(alias="label"))
     elif output == "rich":
+        click.echo("🎨 Rich tree preview")
         RichPrint(differ.build_richtree(original_root, new_root))
