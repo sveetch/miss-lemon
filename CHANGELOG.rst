@@ -18,6 +18,7 @@ TODO
 * [ ] Update README;
 * [ ] Update documentation;
 * [ ] Option to directly perform resource renaming with Python (but it won't be git)?
+* [ ] Tox configuration should test both with or without Rich package;
 
 
 Development

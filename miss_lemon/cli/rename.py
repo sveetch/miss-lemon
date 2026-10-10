@@ -32,7 +32,7 @@ except ImportError:
     ),
 )
 @click.option(
-    "--output",
+    "--command",
     metavar="NAME",
     show_default=True,
     type=click.Choice(["mv", "git-mv"]),
@@ -60,14 +60,14 @@ except ImportError:
     ),
 )
 @click.pass_context
-def rename_command(context, source, step, output, unprefixed, excludes):
+def rename_command(context, source, step, command, unprefixed, excludes):
     """
     Rename resources (directories and files) from a path with a computed number prefix.
     """
     logger = context.obj["logger"]
 
     logger.debug("Working on: {}".format(source))
-    logger.debug("Select output: {}".format(output))
+    logger.debug("Selected command: {}".format(command))
     logger.debug("Collecting resource without prefix: {}".format(unprefixed))
     if excludes:
         logger.debug("Excludes: {}".format(", ".join(excludes)))
@@ -78,9 +78,9 @@ def rename_command(context, source, step, output, unprefixed, excludes):
 
     renamer = Renamer(root)
 
-    if output == "mv":
-        output = renamer.with_shell_mv()
-    elif output == "git-mv":
-        output = renamer.with_shell_gitmv()
+    if command == "mv":
+        cmd_output = renamer.with_shell_mv()
+    elif command == "git-mv":
+        cmd_output = renamer.with_shell_gitmv()
 
-    click.echo(output)
+    click.echo(cmd_output)

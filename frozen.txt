@@ -1,4 +1,4 @@
-# Frozen requirement versions for 'miss-lemon==0.2.0rc6' installation
+# Frozen requirement versions for 'miss-lemon==0.2.0rc7' installation
 click==8.5.0
 colorlog==6.12.0
 bigtree==1.5.3

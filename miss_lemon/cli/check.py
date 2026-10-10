@@ -5,7 +5,8 @@ from ..diff import DiffTree
 
 # On default rich is not present in outputs and may become available further
 AVAILABLE_OUTPUTS = ["json", "tree"]
-
+# On default Big tree output is prefered
+DEFAULT_OUTPUT = "tree"
 # First try to get Rich stack, fallback to basic Click and BigTree
 try:
     import rich_click as click
@@ -13,7 +14,9 @@ except ImportError:
     import click
 else:
     from rich import print as RichPrint
+    # Append Rich to output and make it the default one
     AVAILABLE_OUTPUTS.append("rich")
+    DEFAULT_OUTPUT = "rich"
 
 
 @click.command()
@@ -50,7 +53,7 @@ else:
         "nodes (according to their status). Both will print a tree of differences "
         "between original and renamed tree"
     ),
-    default="tree",
+    default=DEFAULT_OUTPUT,
 )
 @click.option(
     "--unprefixed",
