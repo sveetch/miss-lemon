@@ -109,7 +109,7 @@ def test_collect_basic(caplog, settings):
 
 def test_collect_all(caplog, settings):
     """
-    Option 'allow_unprefixed' allows to collect all resources, even if they not match
+    Option 'allow_unprefixed' allows to collect all resources, even if they dont match
     the regex pattern with prefix.
     """
     caplog.set_level(logging.DEBUG)
@@ -119,6 +119,7 @@ def test_collect_all(caplog, settings):
 
     root = walker.collect()
 
+    # Assert on reduced JSON payload because we don't need the full one
     assert json.loads(root.as_json(allows_only=("path", "children"))) == {
         "path": "{}".format(structure),
         "children": [
@@ -184,6 +185,7 @@ def test_collect_exclude(caplog, settings):
 
     root = walker.collect()
 
+    # Assert on reduced JSON payload because we don't need the full one
     assert json.loads(root.as_json(allows_only=("path", "children"))) == {
         "path": "{}".format(structure),
         "children": [

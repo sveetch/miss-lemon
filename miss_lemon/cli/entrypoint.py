@@ -1,10 +1,17 @@
 """
 Main entrance to commandline actions
 """
-import click
+try:
+    import rich_click as click
+except ImportError:
+    import click
+else:
+    # This is rich-click option only to show arguments in help
+    click.rich_click.SHOW_ARGUMENTS = True
 
 from miss_lemon.logger import init_logger
 
+from miss_lemon import __pkgname__
 from miss_lemon.cli.version import version_command
 from miss_lemon.cli.check import check_command
 from miss_lemon.cli.rename import rename_command
@@ -33,7 +40,7 @@ APP_LOGGER_CONF = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", None)
 @click.pass_context
 def cli_frontend(ctx, verbose):
     """
-    Sample tool for miss-lemon
+    Script for application commandline entrypoint.
     """
     printout = True
     if verbose == 0:
@@ -45,7 +52,7 @@ def cli_frontend(ctx, verbose):
     levels.reverse()
     # Init the logger config
     root_logger = init_logger(
-        "miss-lemon",
+        __pkgname__,
         levels[verbose],
         printout=printout
     )

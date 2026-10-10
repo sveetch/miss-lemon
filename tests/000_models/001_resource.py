@@ -235,7 +235,7 @@ def test_serialize(settings):
     }
 
 
-def test_recursive_children_resources(settings, tmp_path):
+def test_recursive_resources(settings, tmp_path):
     """
     Resource has methods to get a distinct flat list of recursive children either for
     directories or files. Resources are ordered from their relative path from leaft to
@@ -279,7 +279,7 @@ def test_recursive_children_resources(settings, tmp_path):
     # print(tree.decode("utf-8"))
     # print()
 
-    dirs = root.recursive_children_directories()
+    dirs = root.recursive_directories()
     assert [str(v.path.relative_to(root.path)) for v in dirs] == [
         "ping/pong/pang",
         "foo/bar",
@@ -288,7 +288,7 @@ def test_recursive_children_resources(settings, tmp_path):
         "ping",
     ]
 
-    files = root.recursive_children_files()
+    files = root.recursive_files()
     assert [str(v.path.relative_to(root.path)) for v in files] == [
         "ping/pong/pang/pew.txt",
         "foo/bar/hello.txt",

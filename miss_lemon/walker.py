@@ -43,6 +43,8 @@ class DirWalker:
         allow_unprefixed (boolean): If enabled, resource that don't match are collected
             also but they won't never have a "original_prefix" (which won't avoid them
             to have a proper built prefix).
+        excludes (list): A list of "Unix filename patterns" (with fnmatch) to exclude
+            resources that match any of them.
     """
     DEFAULT_FILE_PATTERN = re.compile(
         r"(?P<original_prefix>[0-9]+)_(?P<name>[\S]+)"
@@ -73,7 +75,8 @@ class DirWalker:
 
     def is_excluded(self, path):
         """
-        TODO: Exclude path if its name(or relative path?) match one of excluded names.
+        Exclude path if its path (relative to 'basepath') match one of exclusion
+        patterns.
 
         Results:
             boolean: False if the path is not excluded, else True.
@@ -81,7 +84,6 @@ class DirWalker:
         relative = path.relative_to(self.basepath)
 
         for item in self.excludes:
-            print(relative, ":", fnmatch.fnmatch(relative, item))
             if fnmatch.fnmatch(relative, item):
                 return True
 
@@ -222,15 +224,7 @@ class DirWalker:
 
     def compute(self, step=100):
         """
-        Compute prefix data for each collected resource.
-
-        So we want something like this to be computed: ::
-
-        structure/
-        ├── 01000_core
-        ├── 02000_models
-        │   └── 02100_managers
-        └── 03000_forms
+        Compute prefix data for collected resources.
 
         Keyword Arguments:
             step (integer): Define the lowest limit of prefix for the leaf items. Each

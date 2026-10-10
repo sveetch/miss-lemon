@@ -114,7 +114,7 @@ class ResourceModel(ExportMixin):
             + sorted(self.children_files(), key=lambda x: x.path.name)
         )
 
-    def recursive_children_directories(self, directories=None):
+    def recursive_directories(self, directories=None):
         """
         Return a flat list of all directories from resource, recursively.
 
@@ -127,7 +127,7 @@ class ResourceModel(ExportMixin):
         for v in self.children_directories():
             directories.append(v)
 
-            v.recursive_children_directories(directories=directories)
+            v.recursive_directories(directories=directories)
 
         order_per_name = sorted(directories, key=operator.attrgetter("built_name"))
         return sorted(
@@ -136,7 +136,7 @@ class ResourceModel(ExportMixin):
             reverse=True
         )
 
-    def recursive_children_files(self, files=None):
+    def recursive_files(self, files=None):
         """
         Return a flat list of all files from resource, recursively.
 
@@ -150,7 +150,7 @@ class ResourceModel(ExportMixin):
             files.append(v)
 
         for v in self.children_directories():
-            v.recursive_children_files(files=files)
+            v.recursive_files(files=files)
 
         order_per_name = sorted(files, key=operator.attrgetter("built_name"))
         return sorted(

@@ -1,4 +1,7 @@
-import click
+try:
+    import rich_click as click
+except ImportError:
+    import click
 
 from miss_lemon import __version__
 

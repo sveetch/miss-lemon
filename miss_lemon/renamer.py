@@ -31,7 +31,7 @@ class Renamer:
                 item.path.relative_to(self.root.path),
                 item.path.relative_to(self.root.path).with_name(item.built_name),
             )
-            for item in self.root.recursive_children_files()
+            for item in self.root.recursive_files()
         ]
 
         dirs = [
@@ -39,7 +39,7 @@ class Renamer:
                 item.path.relative_to(self.root.path),
                 item.path.relative_to(self.root.path).with_name(item.built_name),
             )
-            for item in self.root.recursive_children_directories()
+            for item in self.root.recursive_directories()
         ]
 
         return files, dirs

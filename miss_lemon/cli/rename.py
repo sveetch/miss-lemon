@@ -1,10 +1,12 @@
-import logging
 from pathlib import Path
-
-import click
 
 from ..walker import DirWalker
 from ..renamer import Renamer
+
+try:
+    import rich_click as click
+except ImportError:
+    import click
 
 
 @click.command()
@@ -21,6 +23,8 @@ from ..renamer import Renamer
 )
 @click.option(
     "--step",
+    metavar="INTEGER",
+    show_default=True,
     type=click.INT,
     default=100,
     help=(
@@ -29,22 +33,48 @@ from ..renamer import Renamer
 )
 @click.option(
     "--output",
-    metavar="STRING",
-    type=click.Choice(["mv", "git-mv"]),
-    help="Command format name.",
-    default="mv",
+    metavar="NAME",
     show_default=True,
+    type=click.Choice(["mv", "git-mv"]),
+    help="Command name. All resource renaming lines will use this command.",
+    default="mv",
+)
+@click.option(
+    "--unprefixed",
+    is_flag=True,
+    help=(
+        "Allows to collect all resource even if they don't match the regex for "
+        "\"filename with prefix\" (eg: '0001_foo'). Default behavior when this option "
+        "is not enabled, is to ignore those files without prefix, they won't be "
+        "renamed. This is commonly used with '--exclude' to prevent some resources to "
+        "be renamed."
+    ),
+)
+@click.option(
+    "--excludes",
+    metavar="PATTERN",
+    multiple=True,
+    help=(
+        "Define a 'Unix filename pattern'(compatible with Python module 'fnmatch') to "
+        "exclude resources from collect. This can be defined multiple times."
+    ),
 )
 @click.pass_context
-def rename_command(context, source, step, output):
+def rename_command(context, source, step, output, unprefixed, excludes):
     """
-    Rename directories and files from a path with a computed number prefix.
+    Rename resources (directories and files) from a path with a computed number prefix.
     """
-    logging.getLogger("miss-lemon")
+    logger = context.obj["logger"]
 
-    walker = DirWalker(source)
+    logger.debug("Working on: {}".format(source))
+    logger.debug("Select output: {}".format(output))
+    logger.debug("Collecting resource without prefix: {}".format(unprefixed))
+    if excludes:
+        logger.debug("Excludes: {}".format(", ".join(excludes)))
 
-    root = walker.compute()
+    walker = DirWalker(source, allow_unprefixed=unprefixed, excludes=excludes)
+
+    root = walker.compute(step=step)
 
     renamer = Renamer(root)
 

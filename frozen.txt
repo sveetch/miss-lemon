@@ -1,7 +1,9 @@
-# Frozen requirement versions for 'miss-lemon==0.2.0rc4' installation
+# Frozen requirement versions for 'miss-lemon==0.2.0rc6' installation
 click==8.5.0
-bigtree==1.5.3
 colorlog==6.12.0
+bigtree==1.5.3
+# From extra requirements 'rich'
+rich-click==1.9.9
 # From extra requirements 'dev'
 pytest==9.1.1
 # From extra requirements 'quality'

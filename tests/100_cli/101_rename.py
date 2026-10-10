@@ -1,4 +1,11 @@
+
 from click.testing import CliRunner
+try:
+    import rich_click  # noqa: F401
+except ImportError:
+    IS_RICH_CLICK = False
+else:
+    IS_RICH_CLICK = True
 
 from miss_lemon.cli.entrypoint import cli_frontend
 
@@ -15,7 +22,10 @@ def test_rename_required(caplog):
 
     assert caplog.record_tuples == []
 
-    assert "Error: Missing argument 'SOURCE'." in result.output
+    if IS_RICH_CLICK is True:
+        assert "Missing argument 'SOURCE'." in result.output
+    else:
+        assert "Error: Missing argument 'SOURCE'." in result.output
 
 
 def test_rename_basic(caplog, basic_structure):
