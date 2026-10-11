@@ -14,12 +14,15 @@ TODO
 * [x] 'check' dynamic choices for '--output', 'rich' should be allowed only if rich
   stack is available;
 * [x] Test on 'check' command;
+
 * [ ] Conditionnate tests around Rich to its effective installation;
 
 * [ ] Update README;
 * [ ] Update documentation;
-* [ ] Order of tree with 'check' is descending (9->1), however we expected ascending;
+
 * [ ] Tox configuration should test both with or without Rich package;
+
+* [ ] Order of tree with 'check' is descending (9->1), however we expected ascending;
 * [ ] Option to directly perform resource renaming with Python (but it won't be git)?
 
 

@@ -18,7 +18,7 @@ class DiffTree:
             printed first.
 
     .. Note::
-        Because the diff process list the original source, the tree order will not be
+        Because the diff process lists the original source, the tree order will not be
         ordered like the changes preview.
     """
     def __init__(self, source_first=False):

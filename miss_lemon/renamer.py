@@ -47,7 +47,7 @@ class Renamer:
     def with_shell_mv(self, git=False):
         """
         Output shell commands to rename files and directories using either ``mv``
-        command or ``git mv``command.
+        command or ``git mv`` command.
 
         Keyword Arguments:
             git (boolean): If enabled, the output command lines will be prefixed with

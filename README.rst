@@ -1,12 +1,21 @@
 .. _Python: https://www.python.org/
 .. _Click: https://click.palletsprojects.com
 .. _Big Tree: https://bigtree.readthedocs.io/
+.. _rich-click: https://ewels.github.io/rich-click/latest/
+
 
 ==========
 Miss Lemon
 ==========
 
-Rename a file structure with auto incremented prefix number
+Miss Lemon is tool to rename resources (files and directories) with a prefix like
+``0010_stuff/`` or ``0011_foo.py``.
+
+The purpose of numbering resources is to organize them in order.
+
+This tool helps to do it automatically without to rename them each time you introduce
+a new resource or shift some ones.
+
 
 Dependencies
 ************
@@ -14,6 +23,7 @@ Dependencies
 * `Python`_>=3.8;
 * `Click`_>=8.0;
 * `Big Tree`_>=1.5.3;
+* Optionnally `rich-click`_>=1.9.9, <2.0.0;
 
 Links
 *****

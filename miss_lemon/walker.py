@@ -1,22 +1,3 @@
-"""
-TODO:
-
-A script which allow to perform test renaming to increase or decrease their number
-prefix.
-
-Eg: ::
-
-    010_foo
-    020_bar
-
-Could be turned to: ::
-
-    00010_foo
-    00020_bar
-
-Would build data to generate a shell script to apply renaming, either with "mv" or
-"git mv" command.
-"""
 import fnmatch
 import logging
 import math
@@ -30,9 +11,6 @@ from .models.resource import ResourceModel
 class DirWalker:
     """
     Recursively walk into a path to find its resources.
-
-    TODO: During collection, resources must be well ordered because the collected order
-    will determine their prefix number.
 
     Arguments:
         basepath (Path): The path where to collect resources.
