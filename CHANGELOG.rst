@@ -17,17 +17,18 @@ TODO
 
 * [ ] Conditionnate tests around Rich to its effective installation;
 
-* [ ] Update README;
-* [ ] Update documentation;
+* [x] Update README;
+* [x] Update documentation;
 
 * [ ] Tox configuration should test both with or without Rich package;
+* [ ] Better "Usage" documentation for commands;
 
 * [ ] Order of tree with 'check' is descending (9->1), however we expected ascending;
 * [ ] Option to directly perform resource renaming with Python (but it won't be git)?
 
 
-Development
-***********
+Version 0.2.0 - 2026/10/11
+**************************
 
 * Implemented resource collect;
 * Implemented resource prefix computation;
