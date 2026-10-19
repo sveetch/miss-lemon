@@ -51,10 +51,10 @@ def test_collect_basic(caplog, settings):
                                 "original_prefix": "001",
                                 "name": "blog.py",
                                 "children": [],
-                                "built_name": "blog.py"
+                                "built_name": "001_blog.py"
                             }
                         ],
-                        "built_name": "managers"
+                        "built_name": "001_managers"
                     },
                     {
                         "path": "{}/0100_models/002_lookups".format(structure),
@@ -63,7 +63,7 @@ def test_collect_basic(caplog, settings):
                         "original_prefix": "002",
                         "name": "lookups",
                         "children": [],
-                        "built_name": "lookups"
+                        "built_name": "002_lookups"
                     },
                     {
                         "path": "{}/0100_models/0103_category.py".format(structure),
@@ -72,10 +72,10 @@ def test_collect_basic(caplog, settings):
                         "original_prefix": "0103",
                         "name": "category.py",
                         "children": [],
-                        "built_name": "category.py"
+                        "built_name": "0103_category.py"
                     }
                 ],
-                "built_name": "models"
+                "built_name": "0100_models"
             },
             {
                 "path": "{}/1000_views".format(structure),
@@ -84,7 +84,7 @@ def test_collect_basic(caplog, settings):
                 "original_prefix": "1000",
                 "name": "views",
                 "children": [],
-                "built_name": "views"
+                "built_name": "1000_views"
             },
             {
                 "path": "{}/020_foo.py".format(structure),
@@ -93,7 +93,7 @@ def test_collect_basic(caplog, settings):
                 "original_prefix": "020",
                 "name": "foo.py",
                 "children": [],
-                "built_name": "foo.py"
+                "built_name": "020_foo.py"
             }
         ],
         "built_name": "minimal_structure"

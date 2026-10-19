@@ -116,9 +116,9 @@ def test_check_rich(caplog, settings):
     assert result.output == "\n".join([
         "🎨 Rich tree preview",
         "{}".format(source),
-        "├── 0200_lookups <- 002_lookups",
         "├── 0100_managers <- 001_managers",
         "│   └── 0101_blog.py <- 001_blog.py",
+        "├── 0200_lookups <- 002_lookups",
         "├── 0001_category.py <- 0103_category.py",
         "└── nada.py (IGNORED)",
         "",
@@ -145,9 +145,9 @@ def test_check_bigtree(caplog, settings):
     assert result.output == "\n".join([
         "🎨 Big Tree preview",
         "{}".format(source),
-        "├── 0200_lookups <- 002_lookups",
         "├── 0100_managers <- 001_managers",
         "│   └── 0101_blog.py <- 001_blog.py",
+        "├── 0200_lookups <- 002_lookups",
         "├── 0001_category.py <- 0103_category.py",
         "└── nada.py (IGNORED)",
         "",
@@ -178,9 +178,9 @@ def test_check_step(caplog, settings):
     assert result.output == "\n".join([
         "🎨 Big Tree preview",
         "{}".format(source),
-        "├── 020_lookups <- 002_lookups",
         "├── 010_managers <- 001_managers",
         "│   └── 011_blog.py <- 001_blog.py",
+        "├── 020_lookups <- 002_lookups",
         "├── 001_category.py <- 0103_category.py",
         "└── nada.py (IGNORED)",
         "",

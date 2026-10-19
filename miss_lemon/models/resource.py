@@ -46,15 +46,21 @@ class ResourceModel(ExportMixin):
     @property
     def built_name(self):
         """
-        Build name with prefix if not empty, else just the resource name.
+        Build the full name with prefix if not empty, else just the resource path name.
+
+        The prefix may be either the computed one if not empty or the original prefix
+        found from parser.
+
+        Returns:
+            string: The full name
         """
         if not self.prefix and not self.name:
             return self.path.name
 
-        if not self.prefix:
+        if not self.prefix and not self.original_prefix:
             return self.name
 
-        return self.prefix + "_" + self.name
+        return (self.prefix or self.original_prefix) + "_" + self.name
 
     def set_children(self, *args, from_init=False):
         """
