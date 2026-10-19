@@ -18,13 +18,16 @@ TODO
 * [x] Order of tree with 'check' is often bad, it is descending (9->1) while we expecte
   ascending and is order on name (without prefix) but visually it would be expected to
   be order on the final full name;
-* [ ] CRITICAL: Resources resulting in the same name must never be in the output. While
+* [x] CRITICAL: Resources resulting in the same name must never be in the output. While
   'mv' would not say anything, for 'git-mv' it is an error to do 'git mv foo.py foo.py';
-* [ ] Even the collector seems to collect in order on 'path.name', ignoring original
-  included prefix, which is a part of the original order to take care;
+* [ ] We should print a message or send sys.exit error when there is nothing to rename
+  (mostly because of ignored/identical resources);
 * [ ] There is a failure with git-mv: all resources are collected according to user
   options, even resources not registered in repository, which will be in final output,
   and then git will refuse to process them;
+
+  * [ ] 'git ls-files --error-unmatch <file name>' can help to diagnosize a resource GIT
+    status;
 
 * [ ] Conditionnate tests around Rich to its effective installation;
 

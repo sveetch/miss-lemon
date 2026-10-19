@@ -157,7 +157,7 @@ def test_check_bigtree(caplog, settings):
 
 def test_check_step(caplog, settings):
     """
-    Output of report with Big Tree should be a correct preview tree.
+    Step option should change the computation of prefixes.
     """
     runner = CliRunner()
 

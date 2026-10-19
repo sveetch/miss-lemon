@@ -26,21 +26,19 @@ class Renamer:
             items are a list of tuple, each tuple include the source and the
             destination (with new filename with prefix) of resource.
         """
-        files = [
-            (
-                item.path.relative_to(self.root.path),
-                item.path.relative_to(self.root.path).with_name(item.built_name),
-            )
-            for item in self.root.recursive_files()
-        ]
+        files = []
+        for item in self.root.recursive_files():
+            src = item.path.relative_to(self.root.path)
+            dst = item.path.relative_to(self.root.path).with_name(item.built_name)
+            if src != dst:
+                files.append((src, dst))
 
-        dirs = [
-            (
-                item.path.relative_to(self.root.path),
-                item.path.relative_to(self.root.path).with_name(item.built_name),
-            )
-            for item in self.root.recursive_directories()
-        ]
+        dirs = []
+        for item in self.root.recursive_directories():
+            src = item.path.relative_to(self.root.path)
+            dst = item.path.relative_to(self.root.path).with_name(item.built_name)
+            if src != dst:
+                dirs.append((src, dst))
 
         return files, dirs
 

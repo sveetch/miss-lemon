@@ -76,3 +76,40 @@ def test_rename_basic(caplog, basic_structure):
         "",
         "",
     ])
+
+
+def test_rename_step(caplog, minimal_structure):
+    """
+    With step option.
+    """
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli_frontend,
+        ["rename", str(minimal_structure), "--step", "10"]
+    )
+
+    # from miss_lemon.utils.tests import debug_click_invoke
+    # debug_click_invoke(result, caplog)
+
+    assert result.exit_code == 0
+
+    assert caplog.record_tuples == []
+
+    assert result.output == "\n".join([
+        "# This shell script will 'cd' into the source directory then apply renaming "
+        "of resources.",
+        "cd '{}';".format(minimal_structure),
+        (
+            "mv '0100_models/001_managers/001_blog.py' "
+            "'0100_models/001_managers/0111_blog.py';"
+        ),
+        "mv '0100_models/0103_category.py' '0100_models/0101_category.py';",
+        "mv '020_foo.py' '0001_foo.py';",
+        "mv '0100_models/001_managers' '0100_models/0110_managers';",
+        "mv '0100_models/002_lookups' '0100_models/0120_lookups';",
+        "mv '1000_views' '0200_views';",
+        "echo \"Finished all tasks!\";",
+        "",
+        "",
+    ])

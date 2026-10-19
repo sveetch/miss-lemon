@@ -80,6 +80,45 @@ def test_organize(caplog, settings):
     ]
 
 
+def test_organize_ignored(caplog, settings):
+    """
+    Use step 10 so '0100_models' lead to the same destination and therefore not in
+    output.
+    """
+    structure = settings.datas_path / "minimal_structure"
+    walker = DirWalker(structure)
+
+    root = walker.compute(step=10)
+
+    renamer = Renamer(root)
+    files, dirs = renamer.organize()
+
+    assert files == [
+        (
+            Path("0100_models/001_managers/001_blog.py"),
+            Path("0100_models/001_managers/0111_blog.py"),
+        ),
+        (
+            Path("0100_models/0103_category.py"), Path("0100_models/0101_category.py"),
+        ),
+        (
+            Path("020_foo.py"), Path("0001_foo.py"),
+        ),
+    ]
+
+    assert dirs == [
+        (
+            Path("0100_models/001_managers"), Path("0100_models/0110_managers"),
+        ),
+        (
+            Path("0100_models/002_lookups"), Path("0100_models/0120_lookups"),
+        ),
+        (
+            Path("1000_views"), Path("0200_views"),
+        ),
+    ]
+
+
 def test_with_shell_mv(caplog, settings):
     """
     Method should output all command lines to rename resources using command 'mv'.
