@@ -29,7 +29,7 @@ class DiffTree:
         Build a flat dict of all root resources.
 
         Arguments:
-            resource (ResourceModel): Resource object.
+            root (ResourceModel): Resource object.
 
         Returns:
             dict: Dict of resources, item key is indexed the resource relative (to the

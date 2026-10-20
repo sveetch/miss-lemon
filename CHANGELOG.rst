@@ -27,9 +27,12 @@ TODO
   and then git will refuse to process them;
 
   * [ ] 'git ls-files --error-unmatch <file name>' can help to diagnosize a resource GIT
-    status;
+    status HOWEVER it would work only if command is done inside the Git repository;
+  * [ ] Or via https://pypi.org/project/GitPython/ , it would allows to run git command
+    outside the repository;
 
 * [ ] Conditionnate tests around Rich to its effective installation;
+* [ ] 'DiffTree' is never tested directly, only through the 'check' command;
 
 * [x] Update README;
 * [x] Update documentation;

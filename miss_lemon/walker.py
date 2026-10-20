@@ -149,6 +149,12 @@ class DirWalker:
         """
         Compute the range of prefix incrementation for all resources.
 
+        Arguments:
+            step (integer): Step is the minimum value of a prefix for the leaf nodes in
+                the resource tree. Such as step value 100, allow leafs from 101 to 199.
+                Step value 10 allows leafs from 11 to 19. Etc..
+            maxdeep (integer): Maximum deep level in ressource tree.
+
         Returns:
             list: A list of integer for all incrementation, return in the order from
             root to leaf.
@@ -160,6 +166,16 @@ class DirWalker:
     def get_prefix_matrix(self, step, maxdeep):
         """
         Calculate the length of the prefix matrix.
+
+        Arguments:
+            step (integer): Step is the minimum value of a prefix for the leaf nodes in
+                the resource tree. Such as step value 100, allow leafs from 101 to 199.
+                Step value 10 allows leafs from 11 to 19. Etc..
+            maxdeep (integer): Maximum deep level in ressource tree.
+
+        Returns:
+            integer: Length calculated on basis of step (as a decimal number) which is
+            incremented with maxdeep value.
         """
         return int(maxdeep + math.log10(step) + 1)
 
@@ -205,10 +221,9 @@ class DirWalker:
         Compute prefix data for collected resources.
 
         Keyword Arguments:
-            step (integer): Define the lowest limit of prefix for the leaf items. Each
-                parent will increase this value according to their level. Such as for
-                a step of 10, the leaf prefixes would be like between '10' and '19',
-                then direct parent would be between '100' and '190', etc..
+            step (integer): Step is the minimum value of a prefix for the leaf nodes in
+                the resource tree. Such as step value 100, allow leafs from 101 to 199.
+                Step value 10 allows leafs from 11 to 19. Etc..
 
         Returns:
             ResourceModel: The root resource.
