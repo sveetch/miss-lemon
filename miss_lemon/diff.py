@@ -16,13 +16,16 @@ class DiffTree:
         source_first (boolean): If enabled, the diff output will print the source first
             then the renamed name. If disabled (the default) the renamed name is
             printed first.
+        hidden_status (list): List of resource diff status name to ignore from output.
+            On default this is only ``ignored``.
 
     .. Note::
         Because the diff process lists the original source, the tree order will not be
         ordered like the changes preview.
     """
-    def __init__(self, source_first=False):
+    def __init__(self, source_first=False, hidden_status=None):
         self.source_first = source_first
+        self.hidden_status = [] if hidden_status is None else hidden_status
 
     def build_flat_tree(self, root):
         """
@@ -75,12 +78,13 @@ class DiffTree:
             "to": to,
         }
 
-    def get_ascii_label(self, resource, changes=None):
+    def get_ascii_label(self, diff):
         """
         Build a resource label in proper ASCII.
 
         Arguments:
-            resource (ResourceModel): Resource object before computation.
+            diff (dict): Computed difference infos as returned from
+                ``DiffTree.diff_resource()``.
 
         Keyword Arguments:
             changes (dict): Flat dict of paths that have been collected (with user
@@ -89,8 +93,6 @@ class DiffTree:
         Returns:
             string: The built label.
         """
-        diff = self.diff_resource(resource, changes)
-
         if diff["status"] == "ignored":
             return "{} (IGNORED)".format(diff["from"])
         elif diff["status"] == "identical":
@@ -103,22 +105,17 @@ class DiffTree:
 
         return tpl.format(old=diff["from"], new=diff["to"])
 
-    def get_rich_label(self, resource, changes=None):
+    def get_rich_label(self, diff):
         """
         Build a resource label with Rich syntax.
 
         Arguments:
-            resource (ResourceModel): Resource object before computation.
-
-        Keyword Arguments:
-            changes (dict): Flat dict of paths that have been collected (with user
-                options) then computed.
+            diff (dict): Computed difference infos as returned from
+                ``DiffTree.diff_resource()``.
 
         Returns:
             string: The built label.
         """
-        diff = self.diff_resource(resource, changes)
-
         if diff["status"] == "ignored":
             return "[yellow]{} (IGNORED)".format(diff["from"])
         elif diff["status"] == "identical":
@@ -141,11 +138,13 @@ class DiffTree:
             changes (dict): Flat dict of paths that have been collected (with user
                 options) then computed.
         """
+        diff = self.diff_resource(resource, changes.get(str(resource.path), None))
+
+        if diff["status"] in self.hidden_status:
+            return
+
         node = parent.add(
-            self.get_rich_label(
-                resource,
-                changes.get(str(resource.path), None)
-            )
+            self.get_rich_label(diff)
         )
 
         for child in resource.ordered_children():
@@ -201,14 +200,20 @@ class DiffTree:
 
         # Then build a flat dict for digest by Big Tree, each item key must be a path
         # under the root path
-        tree.add_dict_by_path({
-            str(Path(k).relative_to(basenodepath)): {
-                "label": self.get_ascii_label(
-                    v["resource"],
-                    changes.get(str(v["resource"].path), None)
-                )
-            }
-            for k, v in self.build_flat_tree(original_root).items()
-        })
+        children_nodes = {}
+        for k, v in self.build_flat_tree(original_root).items():
+            node_key = str(Path(k).relative_to(basenodepath))
+            diff = self.diff_resource(
+                v["resource"],
+                changes.get(str(v["resource"].path), None)
+            )
+
+            if diff["status"] in self.hidden_status:
+                continue
+
+            children_nodes[node_key] = {"label": self.get_ascii_label(diff)}
+
+        if children_nodes:
+            tree.add_dict_by_path(children_nodes)
 
         return tree

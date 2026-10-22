@@ -84,8 +84,15 @@ else:
         "name. On default the renamed name is printed first."
     ),
 )
+@click.option(
+    "--display-ignored",
+    "display_ignored",
+    is_flag=True,
+    help="Enable display of collected 'ignored' resources in tree.",
+)
 @click.pass_context
-def check_command(context, source, step, output, unprefixed, excludes, from_original):
+def check_command(context, source, step, output, unprefixed, excludes, from_original,
+                  display_ignored):
     """
     Proceed to analyze and prefix computation on a path then output a report.
 
@@ -102,6 +109,12 @@ def check_command(context, source, step, output, unprefixed, excludes, from_orig
     if excludes:
         logger.debug("Excludes: {}".format(", ".join(excludes)))
 
+    hidden_status = []
+    if not display_ignored:
+        hidden_status.append("ignored")
+
+    logger.debug("Hidden status: {}".format(hidden_status or None))
+
     # Collect and compute with user options
     new_walker = DirWalker(source, allow_unprefixed=unprefixed, excludes=excludes)
     new_root = new_walker.compute(step=step)
@@ -111,9 +124,10 @@ def check_command(context, source, step, output, unprefixed, excludes, from_orig
         click.echo(new_root.as_json())
         return
 
-    differ = DiffTree(source_first=from_original)
+    # Other output formats involve a diff between original and changes preview
+    differ = DiffTree(source_first=from_original, hidden_status=hidden_status)
 
-    # Collect the full structure without any exclusions
+    # Collect the full structure without any exclusions (ignoring user options)
     original_walker = DirWalker(source, allow_unprefixed=True)
     original_root = original_walker.collect()
 

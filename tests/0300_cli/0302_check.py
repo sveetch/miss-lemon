@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from click.testing import CliRunner
 try:
     import rich_click  # noqa: F401
@@ -9,6 +11,7 @@ else:
     IS_RICH_CLICK = True
 
 from miss_lemon.cli.entrypoint import cli_frontend
+# from miss_lemon.utils.tests import debug_click_invoke
 
 
 def test_check_required(caplog):
@@ -94,25 +97,37 @@ def test_check_json(caplog, settings):
     }
 
 
+@pytest.mark.skipif(IS_RICH_CLICK is False, reason="Rich is not installed")
 def test_check_rich(caplog, settings):
     """
     Output of report with Rich should be a correct preview tree.
 
-    TODO: Conditionate this test to rich package installation
+    NOTE: If Rich is installed it becomes the default output, so all other tests will
+    probably explitely use the Big tree output 'tree'.
     """
     runner = CliRunner()
 
     source = settings.datas_path / "minimal_structure" / "0100_models"
 
     result = runner.invoke(cli_frontend, ["check", str(source)])
-
-    # from miss_lemon.utils.tests import debug_click_invoke
-    # debug_click_invoke(result, caplog)
-
     assert result.exit_code == 0
-
     assert caplog.record_tuples == []
+    assert result.output == "\n".join([
+        "🎨 Rich tree preview",
+        "{}".format(source),
+        "├── 0100_managers <- 001_managers",
+        "│   └── 0101_blog.py <- 001_blog.py",
+        "├── 0200_lookups <- 002_lookups",
+        "└── 0001_category.py <- 0103_category.py",
+        "",
+    ])
 
+    result = runner.invoke(
+        cli_frontend,
+        ["check", str(source), "--display-ignored"]
+    )
+    assert result.exit_code == 0
+    assert caplog.record_tuples == []
     assert result.output == "\n".join([
         "🎨 Rich tree preview",
         "{}".format(source),
@@ -134,14 +149,26 @@ def test_check_bigtree(caplog, settings):
     source = settings.datas_path / "minimal_structure" / "0100_models"
 
     result = runner.invoke(cli_frontend, ["check", str(source), "--output", "tree"])
-
-    # from miss_lemon.utils.tests import debug_click_invoke
     # debug_click_invoke(result, caplog)
-
     assert result.exit_code == 0
-
     assert caplog.record_tuples == []
+    assert result.output == "\n".join([
+        "🎨 Big Tree preview",
+        "{}".format(source),
+        "├── 0100_managers <- 001_managers",
+        "│   └── 0101_blog.py <- 001_blog.py",
+        "├── 0200_lookups <- 002_lookups",
+        "└── 0001_category.py <- 0103_category.py",
+        "",
+        "",
+    ])
 
+    result = runner.invoke(
+        cli_frontend,
+        ["check", str(source), "--output", "tree", "--display-ignored"]
+    )
+    assert result.exit_code == 0
+    assert caplog.record_tuples == []
     assert result.output == "\n".join([
         "🎨 Big Tree preview",
         "{}".format(source),
@@ -155,34 +182,31 @@ def test_check_bigtree(caplog, settings):
     ])
 
 
-def test_check_step(caplog, settings):
+def test_check_step_identical(caplog, settings):
     """
-    Step option should change the computation of prefixes.
+    Step option should change the computation of prefixes. Also with the minimal
+    structure, this step value leads to an identical destination for '0100_models'.
     """
     runner = CliRunner()
 
-    source = settings.datas_path / "minimal_structure" / "0100_models"
+    source = settings.datas_path / "minimal_structure"
 
     result = runner.invoke(
         cli_frontend,
         ["check", str(source), "--output", "tree", "--step", "10"]
     )
-
-    # from miss_lemon.utils.tests import debug_click_invoke
-    # debug_click_invoke(result, caplog)
-
     assert result.exit_code == 0
-
     assert caplog.record_tuples == []
-
     assert result.output == "\n".join([
         "🎨 Big Tree preview",
         "{}".format(source),
-        "├── 010_managers <- 001_managers",
-        "│   └── 011_blog.py <- 001_blog.py",
-        "├── 020_lookups <- 002_lookups",
-        "├── 001_category.py <- 0103_category.py",
-        "└── nada.py (IGNORED)",
+        "├── 0100_models (SAME)",
+        "│   ├── 0110_managers <- 001_managers",
+        "│   │   └── 0111_blog.py <- 001_blog.py",
+        "│   ├── 0120_lookups <- 002_lookups",
+        "│   └── 0101_category.py <- 0103_category.py",
+        "├── 0200_views <- 1000_views",
+        "└── 0001_foo.py <- 020_foo.py",
         "",
         "",
     ])

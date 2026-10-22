@@ -20,8 +20,17 @@ TODO
   be order on the final full name;
 * [x] CRITICAL: Resources resulting in the same name must never be in the output. While
   'mv' would not say anything, for 'git-mv' it is an error to do 'git mv foo.py foo.py';
+* [x] Conditionnate tests around Rich to its effective installation;
+* [x] 'DiffTree' is never tested directly, only through the 'check' command;
+* [x] Tree display should not display children of ignored resource, and options may
+  allows to display them anyway;
+
+  * [x] hidden_status management in 'DiffTree.build_bigtree()'
+  * [x] Test 'check' cli for hidden_status options;
+
 * [ ] We should print a message or send sys.exit error when there is nothing to rename
-  (mostly because of ignored/identical resources);
+  (mostly because of ignored/identical resources) OR (reverso) an option to return exit
+  error when there are changes (to be used in quality);
 * [ ] There is a failure with git-mv: all resources are collected according to user
   options, even resources not registered in repository, which will be in final output,
   and then git will refuse to process them;
@@ -31,13 +40,11 @@ TODO
   * [ ] Or via https://pypi.org/project/GitPython/ , it would allows to run git command
     outside the repository;
 
-* [ ] Conditionnate tests around Rich to its effective installation;
-* [ ] 'DiffTree' is never tested directly, only through the 'check' command;
 
 * [x] Update README;
 * [x] Update documentation;
+* [x] Tox configuration should test both with or without Rich package;
 
-* [ ] Tox configuration should test both with or without Rich package;
 * [ ] Better "Usage" documentation for commands;
 
 * [ ] Option to directly perform resource renaming with Python (but it won't be git)?
