@@ -113,3 +113,29 @@ def test_rename_step(caplog, minimal_structure):
         "",
         "",
     ])
+
+
+def test_rename_no_available_resource(caplog, tmp_path):
+    """
+    When renamer do not find any eligible (non ignored, non identical) resource, it
+    will raise an error and exit with error signal.
+    """
+    runner = CliRunner()
+
+    foo = tmp_path / "01_foo.py"
+    foo.write_text("# Dummy")
+    bar = tmp_path / "bar.py"
+    bar.write_text("# Dummy")
+
+    result = runner.invoke(
+        cli_frontend,
+        ["rename", str(tmp_path), "--step", "10"]
+    )
+
+    # from miss_lemon.utils.tests import debug_click_invoke
+    # debug_click_invoke(result, caplog)
+    assert result.output == "There was no resource eligible to renaming.\nAborted.\n"
+
+    assert result.exit_code == 1
+
+    assert caplog.record_tuples == []

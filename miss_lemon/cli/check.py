@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from ..walker import DirWalker
 from ..diff import DiffTree
+from ..exceptions import NoAvailableResource
+from ..walker import DirWalker
 
 # On default rich is not present in outputs and may become available further
 AVAILABLE_OUTPUTS = ["json", "tree"]
@@ -90,9 +91,18 @@ else:
     is_flag=True,
     help="Enable display of collected 'ignored' resources in tree.",
 )
+@click.option(
+    "--exit-1",
+    "exit_signal",
+    is_flag=True,
+    help=(
+        "Command will exist with signal code 1 if there is one or more resources to "
+        "rename."
+    ),
+)
 @click.pass_context
 def check_command(context, source, step, output, unprefixed, excludes, from_original,
-                  display_ignored):
+                  display_ignored, exit_signal):
     """
     Proceed to analyze and prefix computation on a path then output a report.
 
@@ -132,9 +142,20 @@ def check_command(context, source, step, output, unprefixed, excludes, from_orig
     original_root = original_walker.collect()
 
     # Print tree preview with differences report
-    if output == "tree":
-        click.echo("🎨 Big Tree preview")
-        click.echo(differ.build_bigtree(original_root, new_root).show(alias="label"))
-    elif output == "rich":
-        click.echo("🎨 Rich tree preview")
-        RichPrint(differ.build_richtree(original_root, new_root))
+    try:
+        if output == "tree":
+            built = differ.build_bigtree(original_root, new_root)
+        elif output == "rich":
+            built = differ.build_richtree(original_root, new_root)
+    except NoAvailableResource:
+        click.echo("Nothing to rename.")
+    else:
+        if output == "tree":
+            click.echo("🎨 Big Tree preview")
+            click.echo(built.show(alias="label"))
+        elif output == "rich":
+            click.echo("🎨 Rich tree preview")
+            RichPrint(built)
+        # Exit error signal if enabled from option
+        if exit_signal:
+            raise click.Abort

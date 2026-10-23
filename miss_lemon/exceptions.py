@@ -18,3 +18,11 @@ class AppOperationError(MisslemonBaseException):
     Sample exception to raise from your code.
     """
     pass
+
+
+class NoAvailableResource(MisslemonBaseException):
+    """
+    Exception to raise when Renamer does not find any resource to rename (ignored or
+    identical status).
+    """
+    pass

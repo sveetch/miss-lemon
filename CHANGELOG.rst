@@ -28,9 +28,13 @@ TODO
   * [x] hidden_status management in 'DiffTree.build_bigtree()'
   * [x] Test 'check' cli for hidden_status options;
 
-* [ ] We should print a message or send sys.exit error when there is nothing to rename
-  (mostly because of ignored/identical resources) OR (reverso) an option to return exit
-  error when there are changes (to be used in quality);
+* [x] When there is no resources to rename:
+
+  * [x] check command: Output a simple message.
+  * [x] check command: Add an option to return sys.exit error when there is a resource
+    to rename (for quality usage);
+  * [x] rename command: Output an error and sys.exit error.
+
 * [ ] There is a failure with git-mv: all resources are collected according to user
   options, even resources not registered in repository, which will be in final output,
   and then git will refuse to process them;
@@ -48,6 +52,23 @@ TODO
 * [ ] Better "Usage" documentation for commands;
 
 * [ ] Option to directly perform resource renaming with Python (but it won't be git)?
+
+
+Development
+***********
+
+* Fixed order of tree output in 'check' command;
+* Fixed 'rename' command to not output resources that lead to the same path;
+* Ensure tests are working if Rich is not installed and update Tox configuration to
+  cover with or without Rich;
+* Changed 'check' command so the ignored resources does not display anymore on default,
+  a new option allows to show them again;
+* Added new option to 'check' command to abort with a signal code 1 if there is some
+  resource eligible to renaming (this can be used in quality task to validate a
+  structure does not need to be renamed);
+* Changed 'rename' command so it return a message and exist with signal code 1 if there
+  is no resource found to rename;
+* Improved test coverage;
 
 
 Version 0.2.0 - 2026/10/11

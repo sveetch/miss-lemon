@@ -1,3 +1,6 @@
+from .exceptions import NoAvailableResource
+
+
 class Renamer:
     """
     TODO:
@@ -63,6 +66,9 @@ class Renamer:
         ]
 
         files, dirs = self.organize()
+
+        if not files and not dirs:
+            raise NoAvailableResource("No available resource.")
 
         command_name = "git mv" if git is True else "mv"
 

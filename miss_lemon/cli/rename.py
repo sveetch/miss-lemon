@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from ..walker import DirWalker
+from ..exceptions import NoAvailableResource
 from ..renamer import Renamer
+from ..walker import DirWalker
 
 try:
     import rich_click as click
@@ -78,9 +79,13 @@ def rename_command(context, source, step, command, unprefixed, excludes):
 
     renamer = Renamer(root)
 
-    if command == "mv":
-        cmd_output = renamer.with_shell_mv()
-    elif command == "git-mv":
-        cmd_output = renamer.with_shell_gitmv()
-
-    click.echo(cmd_output)
+    try:
+        if command == "mv":
+            cmd_output = renamer.with_shell_mv()
+        elif command == "git-mv":
+            cmd_output = renamer.with_shell_gitmv()
+    except NoAvailableResource:
+        click.echo("There was no resource eligible to renaming.")
+        raise click.Abort
+    else:
+        click.echo(cmd_output)

@@ -7,6 +7,8 @@ except ImportError:
 
 from bigtree import Node, Tree
 
+from .exceptions import NoAvailableResource
+
 
 class DiffTree:
     """
@@ -128,7 +130,7 @@ class DiffTree:
 
         return tpl.format(old=diff["from"], new=diff["to"])
 
-    def add_rich_children_node(self, parent, resource, changes):
+    def add_rich_children_node(self, parent, resource, changes, eligibles=None):
         """
         Recursively attach resource and its children to the parent node.
 
@@ -137,18 +139,27 @@ class DiffTree:
             resource (ResourceModel): Resource object to attach.
             changes (dict): Flat dict of paths that have been collected (with user
                 options) then computed.
+            eligibles (list): A list where to add eligible resources.
         """
+        eligibles = [] if eligibles is None else eligibles
+
         diff = self.diff_resource(resource, changes.get(str(resource.path), None))
 
+        # Ignore resource with a status to hide
         if diff["status"] in self.hidden_status:
             return
 
+        # Add eligible resource node label as parent child
         node = parent.add(
             self.get_rich_label(diff)
         )
 
+        if diff["status"] not in ("ignored", "identical"):
+            eligibles.append(diff["from"])
+
+        # Dig into the node children
         for child in resource.ordered_children():
-            self.add_rich_children_node(node, child, changes)
+            self.add_rich_children_node(node, child, changes, eligibles=eligibles)
 
     def build_richtree(self, original_root, changes_root):
         """
@@ -165,15 +176,19 @@ class DiffTree:
         if RichTree is None:
             raise ValueError("The 'Rich' stack is not installed.")
 
-        # originals = self.build_flat_tree(original_root)
+        # Build a flat tree of computed resources
         changes = self.build_flat_tree(changes_root)
 
         # Start tree with root
         tree = RichTree(str(original_root.path))
 
         # Then recursively append children
+        eligibles = []
         for child in original_root.ordered_children():
-            self.add_rich_children_node(tree, child, changes)
+            self.add_rich_children_node(tree, child, changes, eligibles=eligibles)
+
+        if not eligibles:
+            raise NoAvailableResource("No available resource.")
 
         return tree
 
@@ -195,10 +210,14 @@ class DiffTree:
 
         # Start tree with root
         tree = Tree(
-            Node(str(original_root.path.name), label=str(original_root.path))
+            Node(
+                str(original_root.path.name),
+                label=str(original_root.path),
+                diff={}
+            )
         )
 
-        # Then build a flat dict for digest by Big Tree, each item key must be a path
+        # Then build a flat dict to digest by Big Tree, each item key must be a path
         # under the root path
         children_nodes = {}
         for k, v in self.build_flat_tree(original_root).items():
@@ -208,11 +227,25 @@ class DiffTree:
                 changes.get(str(v["resource"].path), None)
             )
 
+            # Don't store resource or its children if resource is ignored
             if diff["status"] in self.hidden_status:
                 continue
 
-            children_nodes[node_key] = {"label": self.get_ascii_label(diff)}
+            children_nodes[node_key] = {
+                "diff": diff,
+                "label": self.get_ascii_label(diff)
+            }
 
+        # Check if there is at least one eligible resource else raise error
+        valid = [
+            k
+            for k, v in children_nodes.items()
+            if v["diff"]["status"] not in ("ignored", "identical")
+        ]
+        if not valid:
+            raise NoAvailableResource("No available resource.")
+
+        # If there is some children nodes to display
         if children_nodes:
             tree.add_dict_by_path(children_nodes)
 

@@ -109,8 +109,8 @@ def test_check_rich(caplog, settings):
 
     source = settings.datas_path / "minimal_structure" / "0100_models"
 
-    result = runner.invoke(cli_frontend, ["check", str(source)])
-    assert result.exit_code == 0
+    result = runner.invoke(cli_frontend, ["check", str(source), "--exit-1"])
+    assert result.exit_code == 1
     assert caplog.record_tuples == []
     assert result.output == "\n".join([
         "🎨 Rich tree preview",
@@ -119,6 +119,7 @@ def test_check_rich(caplog, settings):
         "│   └── 0101_blog.py <- 001_blog.py",
         "├── 0200_lookups <- 002_lookups",
         "└── 0001_category.py <- 0103_category.py",
+        "Aborted.",
         "",
     ])
 
@@ -148,9 +149,12 @@ def test_check_bigtree(caplog, settings):
 
     source = settings.datas_path / "minimal_structure" / "0100_models"
 
-    result = runner.invoke(cli_frontend, ["check", str(source), "--output", "tree"])
+    result = runner.invoke(
+        cli_frontend,
+        ["check", str(source), "--output", "tree", "--exit-1"]
+    )
     # debug_click_invoke(result, caplog)
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert caplog.record_tuples == []
     assert result.output == "\n".join([
         "🎨 Big Tree preview",
@@ -160,6 +164,7 @@ def test_check_bigtree(caplog, settings):
         "├── 0200_lookups <- 002_lookups",
         "└── 0001_category.py <- 0103_category.py",
         "",
+        "Aborted.",
         "",
     ])
 
@@ -210,3 +215,46 @@ def test_check_step_identical(caplog, settings):
         "",
         "",
     ])
+
+
+def test_check_bigtree_empty(caplog, tmp_path):
+    """
+    When no resource is eligible to rename, output a message and stop there, exit signal
+    code is always 0.
+    """
+    runner = CliRunner()
+
+    foo = tmp_path / "01_foo.py"
+    foo.write_text("# Dummy")
+    bar = tmp_path / "bar.py"
+    bar.write_text("# Dummy")
+
+    result = runner.invoke(
+        cli_frontend,
+        ["check", str(tmp_path), "--output", "tree", "--step", "10", "--exit-1"]
+    )
+    assert result.exit_code == 0
+    assert caplog.record_tuples == []
+    assert result.output == "Nothing to rename.\n"
+
+
+@pytest.mark.skipif(IS_RICH_CLICK is False, reason="Rich is not installed")
+def test_check_rich_empty(caplog, tmp_path):
+    """
+    When no resource is eligible to rename, output a message and stop there, exit signal
+    code is always 0.
+    """
+    runner = CliRunner()
+
+    foo = tmp_path / "01_foo.py"
+    foo.write_text("# Dummy")
+    bar = tmp_path / "bar.py"
+    bar.write_text("# Dummy")
+
+    result = runner.invoke(
+        cli_frontend,
+        ["check", str(tmp_path), "--output", "rich", "--step", "10", "--exit-1"]
+    )
+    assert result.exit_code == 0
+    assert caplog.record_tuples == []
+    assert result.output == "Nothing to rename.\n"
