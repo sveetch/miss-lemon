@@ -36,15 +36,17 @@ class DirWalker:
         self.allow_unprefixed = allow_unprefixed
         self.excludes = excludes or []
 
-    def is_ignored(self, path):
+    def is_protected(self, path):
         """
-        Check if resource is hidden or protected to ignore.
+        Check if resource is protected against renaming.
 
-        * Hidden resource name starts with ``.``;
-        * Protected resource name starts with ``_``;
+        A resource is assumed to be protected if:
+
+        * Resource name starts with ``.``;
+        * Resource name starts with ``_``;
 
         Results:
-            boolean: False if the path is not to ignore, else True.
+            boolean: False if the path is not protected else True.
         """
         return (
             path.name.startswith(".")
@@ -74,7 +76,7 @@ class DirWalker:
         Results:
             ResourceModel: The resource object if path was eligible else returns False.
         """
-        if self.is_ignored(path):
+        if self.is_protected(path):
             return False
 
         if self.is_excluded(path):

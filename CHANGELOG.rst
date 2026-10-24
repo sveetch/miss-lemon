@@ -35,6 +35,7 @@ TODO
     to rename (for quality usage);
   * [x] rename command: Output an error and sys.exit error.
 
+* [ ] In output trees, directory resources should ends with a ``/``;
 * [ ] There is a failure with git-mv: all resources are collected according to user
   options, even resources not registered in repository, which will be in final output,
   and then git will refuse to process them;
