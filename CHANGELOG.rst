@@ -36,6 +36,10 @@ TODO
   * [x] rename command: Output an error and sys.exit error.
 
 * [x] In 'check' output trees, directory resources should ends with a ``/``;
+* [x] Update README;
+* [x] Update documentation;
+* [x] Tox configuration should test both with or without Rich package;
+* [x] Better "Usage" documentation for commands;
 * [ ] There is a failure with git-mv: all resources are collected according to user
   options, even resources not registered in repository, which will be in final output,
   and then git will refuse to process them;
@@ -45,13 +49,6 @@ TODO
   * [ ] Or via https://pypi.org/project/GitPython/ , it would allows to run git command
     outside the repository;
 
-* [ ] Look at https://trees.software/#git-status for possible improvement of 'check' tree ?
-
-* [x] Update README;
-* [x] Update documentation;
-* [x] Tox configuration should test both with or without Rich package;
-
-* [ ] Better "Usage" documentation for commands;
 
 * [ ] Option to directly perform resource renaming with Python (but it won't be git)?
 
@@ -68,9 +65,11 @@ Development
 * Added new option to 'check' command to abort with a signal code 1 if there is some
   resource eligible to renaming (this can be used in quality task to validate a
   structure does not need to be renamed);
+* Changed 'check' command output to add an ending slash on directory resource nodes;
 * Changed 'rename' command so it return a message and exist with signal code 1 if there
   is no resource found to rename;
 * Improved test coverage;
+* Improved documentation;
 
 
 Version 0.2.0 - 2026/10/11

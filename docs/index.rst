@@ -10,8 +10,10 @@ Contents
    :maxdepth: 2
 
    install.rst
-   usage.rst
-   cli.rst
+   overview.rst
+   help.rst
+   check.rst
+   rename.rst
    references/index.rst
 
 About the project
