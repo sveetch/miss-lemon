@@ -35,7 +35,7 @@ TODO
     to rename (for quality usage);
   * [x] rename command: Output an error and sys.exit error.
 
-* [ ] In output trees, directory resources should ends with a ``/``;
+* [x] In 'check' output trees, directory resources should ends with a ``/``;
 * [ ] There is a failure with git-mv: all resources are collected according to user
   options, even resources not registered in repository, which will be in final output,
   and then git will refuse to process them;
@@ -45,6 +45,7 @@ TODO
   * [ ] Or via https://pypi.org/project/GitPython/ , it would allows to run git command
     outside the repository;
 
+* [ ] Look at https://trees.software/#git-status for possible improvement of 'check' tree ?
 
 * [x] Update README;
 * [x] Update documentation;

@@ -52,17 +52,18 @@ def test_diff_resource():
     """
     differ = DiffTree()
 
-    original = ResourceModel(path=Path("root/middle/leaf"))
+    leaf = Path("root/middle/leaf")
+    original = ResourceModel(path=leaf)
 
     # No changes given, assume this is a resource to ignore
     result = differ.diff_resource(original, changes=None)
-    assert result == {"status": "ignored", "from": "leaf", "to": None}
+    assert result == {"status": "ignored", "from": leaf, "to": None}
 
     # Changes lead to the same name, state it as "identical"
     result = differ.diff_resource(original, changes={"resource": original})
-    assert result == {"status": "identical", "from": "leaf", "to": "leaf"}
+    assert result == {"status": "identical", "from": leaf, "to": "leaf"}
 
     # Changes lead to the same name, state it as "identical"
     different = ResourceModel(path=Path("root/middle/new_leaf"))
     result = differ.diff_resource(original, changes={"resource": different})
-    assert result == {"status": "changed", "from": "leaf", "to": "new_leaf"}
+    assert result == {"status": "changed", "from": leaf, "to": "new_leaf"}

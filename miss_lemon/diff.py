@@ -57,8 +57,9 @@ class DiffTree:
                 options) then computed.
 
         Returns:
-            dict: A dictionnary with diff data items 'status', 'from' and 'to'. 'to'
-            can be None if resource has been ignored from collection with user options.
+            dict: A dictionnary with diff data items 'status', 'from' (Path object) and
+            'to' (Path name string). 'to' can be None if resource has been ignored from
+            collection with user options.
         """
         status = "ignored"
         to = None
@@ -76,7 +77,7 @@ class DiffTree:
 
         return {
             "status": status,
-            "from": resource.path.name,
+            "from": resource.path,
             "to": to,
         }
 
@@ -95,17 +96,20 @@ class DiffTree:
         Returns:
             string: The built label.
         """
+        source = diff["from"].name + "/" if diff["from"].is_dir() else diff["from"].name
+        dest = diff["to"] + "/" if diff["from"].is_dir() else diff["to"]
+
         if diff["status"] == "ignored":
-            return "{} (IGNORED)".format(diff["from"])
+            return "{} (IGNORED)".format(source)
         elif diff["status"] == "identical":
-            return "{} (SAME)".format(diff["from"])
+            return "{} (SAME)".format(source)
 
         if self.source_first:
             tpl = "{old} -> {new}"
         else:
             tpl = "{new} <- {old}"
 
-        return tpl.format(old=diff["from"], new=diff["to"])
+        return tpl.format(old=source, new=dest)
 
     def get_rich_label(self, diff):
         """
@@ -118,17 +122,20 @@ class DiffTree:
         Returns:
             string: The built label.
         """
+        source = diff["from"].name + "/" if diff["from"].is_dir() else diff["from"].name
+        dest = diff["to"] + "/" if diff["from"].is_dir() else diff["to"]
+
         if diff["status"] == "ignored":
-            return "[yellow]{} (IGNORED)".format(diff["from"])
+            return "[yellow]{} (IGNORED)".format(source)
         elif diff["status"] == "identical":
-            return "{} (SAME)".format(diff["from"])
+            return "{} (SAME)".format(source)
 
         if self.source_first:
             tpl = "{old} -> [green]{new}[/green]"
         else:
             tpl = "[green]{new}[/green] <- {old}"
 
-        return tpl.format(old=diff["from"], new=diff["to"])
+        return tpl.format(old=source, new=dest)
 
     def add_rich_children_node(self, parent, resource, changes, eligibles=None):
         """
