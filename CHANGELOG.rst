@@ -3,8 +3,8 @@
 Changelog
 =========
 
-Development
-***********
+Version 0.3.0 - 2026/10/27
+**************************
 
 * Fixed order of tree output in 'check' command;
 * Fixed 'rename' command to not output resources that lead to the same path;
@@ -36,7 +36,7 @@ Version 0.2.0 - 2026/10/11
 * Added both "Big Tree" and "Rich Tree" support for preview from 'check' command;
 
 
-Version 0.1.0 - Unreleased
+Version 0.1.0 - 2026/09/25
 **************************
 
 * First commit.
