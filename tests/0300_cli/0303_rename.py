@@ -4,8 +4,10 @@ try:
     import rich_click  # noqa: F401
 except ImportError:
     IS_RICH_CLICK = False
+    ABORT_ENDING = "!"
 else:
     IS_RICH_CLICK = True
+    ABORT_ENDING = "."
 
 from miss_lemon.cli.entrypoint import cli_frontend
 
@@ -134,7 +136,11 @@ def test_rename_no_available_resource(caplog, tmp_path):
 
     # from miss_lemon.utils.tests import debug_click_invoke
     # debug_click_invoke(result, caplog)
-    assert result.output == "There was no resource eligible to renaming.\nAborted.\n"
+    assert result.output == (
+        "There was no resource eligible to renaming.\nAborted{}\n".format(
+            ABORT_ENDING
+        )
+    )
 
     assert result.exit_code == 1
 

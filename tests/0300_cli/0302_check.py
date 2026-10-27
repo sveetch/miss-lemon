@@ -7,8 +7,10 @@ try:
     import rich_click  # noqa: F401
 except ImportError:
     IS_RICH_CLICK = False
+    ABORT_ENDING = "!"
 else:
     IS_RICH_CLICK = True
+    ABORT_ENDING = "."
 
 from miss_lemon.cli.entrypoint import cli_frontend
 # from miss_lemon.utils.tests import debug_click_invoke
@@ -119,7 +121,7 @@ def test_check_rich(caplog, settings):
         "│   └── 0101_blog.py <- 001_blog.py",
         "├── 0200_lookups/ <- 002_lookups/",
         "└── 0001_category.py <- 0103_category.py",
-        "Aborted.",
+        "Aborted{}".format(ABORT_ENDING),
         "",
     ])
 
@@ -164,7 +166,7 @@ def test_check_bigtree(caplog, settings):
         "├── 0200_lookups/ <- 002_lookups/",
         "└── 0001_category.py <- 0103_category.py",
         "",
-        "Aborted.",
+        "Aborted{}".format(ABORT_ENDING),
         "",
     ])
 
