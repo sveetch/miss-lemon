@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Development
+***********
+
+Fixed critical bug with resource label display when ignored resources are allowed.
+
+
 Version 0.3.0 - 2026/10/27
 **************************
 

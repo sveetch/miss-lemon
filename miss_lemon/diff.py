@@ -97,7 +97,9 @@ class DiffTree:
             string: The built label.
         """
         source = diff["from"].name + "/" if diff["from"].is_dir() else diff["from"].name
-        dest = diff["to"] + "/" if diff["from"].is_dir() else diff["to"]
+        dest = diff["to"] or ""
+        if diff["from"].is_dir():
+            dest = dest + "/"
 
         if diff["status"] == "ignored":
             return "{} (IGNORED)".format(source)
@@ -123,7 +125,9 @@ class DiffTree:
             string: The built label.
         """
         source = diff["from"].name + "/" if diff["from"].is_dir() else diff["from"].name
-        dest = diff["to"] + "/" if diff["from"].is_dir() else diff["to"]
+        dest = diff["to"] or ""
+        if diff["from"].is_dir():
+            dest = dest + "/"
 
         if diff["status"] == "ignored":
             return "[yellow]{} (IGNORED)".format(source)

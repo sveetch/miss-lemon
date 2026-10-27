@@ -54,6 +54,7 @@ def test_diff_resource():
 
     leaf = Path("root/middle/leaf")
     original = ResourceModel(path=leaf)
+    different = ResourceModel(path=Path("root/middle/new_leaf"))
 
     # No changes given, assume this is a resource to ignore
     result = differ.diff_resource(original, changes=None)
@@ -64,6 +65,55 @@ def test_diff_resource():
     assert result == {"status": "identical", "from": leaf, "to": "leaf"}
 
     # Changes lead to the same name, state it as "identical"
-    different = ResourceModel(path=Path("root/middle/new_leaf"))
     result = differ.diff_resource(original, changes={"resource": different})
     assert result == {"status": "changed", "from": leaf, "to": "new_leaf"}
+
+
+def test_get_ascii_label(settings):
+    """
+    Label should be correct proper ascii with ending slash for directory
+    """
+    structure = settings.datas_path / "basic_structure"
+
+    differ = DiffTree()
+
+    original = ResourceModel(path=(structure / "0100_models/001_managers"))
+    different = ResourceModel(path=(structure / "0100_models/010_managers"))
+
+    # No changes given, assume this is a resource to ignore
+    result = differ.diff_resource(original, changes=None)
+    assert differ.get_ascii_label(result) == "001_managers/ (IGNORED)"
+
+    # Changes lead to the same name, state it as "identical"
+    result = differ.diff_resource(original, changes={"resource": original})
+    assert differ.get_ascii_label(result) == "001_managers/ (SAME)"
+
+    # Changes lead to the same name, state it as "identical"
+    result = differ.diff_resource(original, changes={"resource": different})
+    assert differ.get_ascii_label(result) == "010_managers/ <- 001_managers/"
+
+
+def test_get_rich_label(settings):
+    """
+    Label should be correct Rich syntax with ending slash for directory
+    """
+    structure = settings.datas_path / "basic_structure"
+
+    differ = DiffTree()
+
+    original = ResourceModel(path=(structure / "0100_models/001_managers"))
+    different = ResourceModel(path=(structure / "0100_models/010_managers"))
+
+    # No changes given, assume this is a resource to ignore
+    result = differ.diff_resource(original, changes=None)
+    assert differ.get_rich_label(result) == "[yellow]001_managers/ (IGNORED)"
+
+    # Changes lead to the same name, state it as "identical"
+    result = differ.diff_resource(original, changes={"resource": original})
+    assert differ.get_rich_label(result) == "001_managers/ (SAME)"
+
+    # Changes lead to the same name, state it as "identical"
+    result = differ.diff_resource(original, changes={"resource": different})
+    assert differ.get_rich_label(result) == (
+        "[green]010_managers/[/green] <- 001_managers/"
+    )
